@@ -13,8 +13,11 @@
 #include "get_next_line.h"
 char *get_next_line(int fd)
 {
-	char	*buffer;
-	char	*line;
+	static t_list *stash == NULL;
+	char *line;
+	int bytes_read;
+
+
 
 }
 
@@ -29,7 +32,16 @@ char	*update_buffer()
 int	main(void)
 {
 	int	fd;
+	char 		*line;
 
-	fd = open(" .txt", O_RDONLY);
+	fd = open("example.txt", O_RDONLY);
+	while (1)
+	{
+		line = get_next_line(fd);
+		if (line == NULL)
+			break;
+		printff("%s\n", line);
+		free(line);
+	}
 	return (0);
 }

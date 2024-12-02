@@ -4,7 +4,7 @@ this is an example file
 
 with some lines
 try
-new
+             new
 things
 ifdidijgbdijfgbbdsjfjkgdkjfdgkbjfdgkjgfgfdbdskgfjbbjkgfdkjgfdkbjgfdkbjgfgfdkjfdkbjgfdkbjgfdkbjggbkjkdjgfsjgfkbjgfdskbjkjgfdkjgsfdkjgfdjkbgfdjkbgbjkdgkbjsjkgfkjbgbkjdgfskjgfjkbgfdkjbgdfsjkgfdkjbgdkbjgfdkjgdkjgfdkjbgkjdsfgkbjgkjsfdjkbgfdbjkgfbjkgfdsksjgfbkj~
 12

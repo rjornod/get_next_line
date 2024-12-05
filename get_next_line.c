@@ -6,89 +6,51 @@
 /*   By: rojornod <rojornod@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/02 13:14:08 by rojornod          #+#    #+#             */
-/*   Updated: 2024/12/02 16:27:11 by rojornod         ###   ########.fr       */
+/*   Updated: 2024/12/05 16:09:26 by rojornod         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "get_next_line.h"
 
-static char	*append_buffer(int fd, char *leftover, char *buffer);
-static char	*extract_line(char *line);
-static char	*ft_strchr(char *s, int c);
-
 char	*get_next_line(int fd)
 {
-	static char	*leftover;
+	static char	*buffer;
 	char		*line;
-	char		*buffer;
 
-	buffer = (char *)malloc((BUFFER_SIZE + 1) * sizeof(char));
-	if (fd < 0 || BUFFER_SIZE <= 0 || read(fd, 0, 0) < 0)
-	{
-		free(leftover);
-		free(buffer);
-		leftover = NULL;
-		buffer = NULL;
+	if (fd < 0, BUFFER_SIZE <= 0, read(fd, 0, 0) < 0)
 		return (NULL);
-	}
+	buffer = read_file(fd, buffer);
 	if (!buffer)
 		return (NULL);
-	line = append_buffer(fd, leftover, buffer);
-	free(buffer);
-	buffer = NULL;
-	if (!line)
-		return (NULL);
-	leftover = extract_line(line);
-	return (line);
 }
 
-static char	*extract_line(char *line_buffer)
+char	*read_file(int fd, char *line_buffer)
 {
-	char	*leftover;
-	ssize_t	i;
+	int		bytes_read;
+	char	*buffer;
 
-	i = 0;
-	while (line_buffer[i] != '\n' && line_buffer[i] != '\0')
-		i++;
-	if (line_buffer[i] == 0 || line_buffer[1] == 0)
+	if (!line_buffer)
+		line_buffer = (char *)malloc(1 * sizeof (char));
+	*line_buffer = '\0';
+	buffer = (char *)malloc((BUFFER_SIZE + 1) * sizeof (char));
+	if (!buffer)
 		return (NULL);
-	leftover = ft_substr(line_buffer, i + 1, ft_strlen(line_buffer) - i);
-	if (*leftover == 0)
-	{
-		free(leftover);
-		leftover = NULL;
-	}
-	line_buffer[i + 1] = '\0';
-	return (leftover);
-}
-
-static char	*append_buffer(int fd, char *leftover, char *buffer)
-{
-	ssize_t	bytes_read;
-	char	*tmp;
-
 	bytes_read = 1;
 	while (bytes_read > 0)
 	{
 		bytes_read = read(fd, buffer, BUFFER_SIZE);
 		if (bytes_read == -1)
 		{
-			free(leftover);
+			free(buffer);
 			return (NULL);
 		}
-		else if (bytes_read == 0)
-			break ;
-		buffer[bytes_read] = 0;
-		if (!leftover)
-			leftover = ft_strdup("");
-		tmp = leftover;
-		leftover = ft_strjoin(tmp, buffer);
-		free(tmp);
-		tmp = NULL;
+		buffer[bytes_read] = '\0';
+		line_buffer = ft_free(line_buffer, buffer);
 		if (ft_strchr(buffer, '\n'))
 			break ;
 	}
-	return (leftover);
+	free(buffer);
+	return (line_buffer);
 }
 
 static char	*ft_strchr(char *s, int c)
@@ -109,17 +71,18 @@ static char	*ft_strchr(char *s, int c)
 	return (NULL);
 }
 
-int main(void)
+int	main (void)
 {
-    int fd = open("example.txt", O_RDONLY);
-    char *line;
-	int i = 0;
+	int		fd;
+	char	*line;
+	int 	i;
 
-    while ((line = get_next_line(fd)) != NULL) {
-        printf("[%d] %s",i, line);
+	fd = open("example.txt", O_RDONLY);
+	while ((line = get_next_line(fd)) != NULL)
+	{
 		i++;
-        free(line);
-    }
-    close(fd);
-    return 0;
+		printf("[%d] %s", i, line);
+	}
+	free(line);
+	return (0);
 }

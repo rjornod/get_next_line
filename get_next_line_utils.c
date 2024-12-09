@@ -6,31 +6,31 @@
 /*   By: rojornod <rojornod@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/02 13:14:00 by rojornod          #+#    #+#             */
-/*   Updated: 2024/12/02 13:40:33 by rojornod         ###   ########.fr       */
+/*   Updated: 2024/12/09 13:49:39 by rojornod         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "get_next_line.h"
 
-char	*ft_strdup(char *s1)
+char	*ft_strchr(char *s, int c)
 {
-	char			*dest;
 	unsigned int	i;
+	char			cc;
 
-	dest = (char *) malloc(ft_strlen(s1) + 1);
-	if (!dest)
-		return (NULL);
+	cc = (char) c;
 	i = 0;
-	while (s1[i])
+	while (s[i])
 	{
-		dest[i] = s1[i];
+		if (s[i] == cc)
+			return ((char *) &s[i]);
 		i++;
 	}
-	dest[i] = 0;
-	return (dest);
+	if (s[i] == cc)
+		return ((char *) &s[i]);
+	return (NULL);
 }
 
-size_t	ft_strlen(char *s)
+size_t	ft_strlen(const char *s)
 {
 	int	i;
 
@@ -40,52 +40,55 @@ size_t	ft_strlen(char *s)
 	return (i);
 }
 
-char	*ft_substr(char *s, unsigned int start, size_t len)
+void	ft_bzero(void *s, size_t n)
 {
-	size_t	i;
 	char	*str;
+	size_t	i;
 
-	if (!s)
-		return (NULL);
-	if (start > ft_strlen(s))
-		return (malloc(1));
-	if (len > ft_strlen(s + start))
-		len = ft_strlen(s + start);
-	str = malloc((len + 1) * sizeof(char));
-	if (!str)
-		return (NULL);
+	str = (char *)s;
 	i = 0;
-	while (i < len)
+	while (i < n)
 	{
-		str[i] = s[start + i];
+		str[i] = '\0';
 		i++;
 	}
-	str[i] = 0;
-	return (str);
 }
 
-char	*ft_strjoin(char *s1, char *s2)
+char	*ft_strjoin(char const *s1, char const *s2)
 {
-	char			*res;
+	int		sizetotal;
+	char	*res;
+	int		i;
+	int		j;
 
-	res = (char *) malloc((ft_strlen(s1) + ft_strlen(s2) + 1) * sizeof(char));
-	if (!res)
+	i = 0;
+	sizetotal = ft_strlen(s1) + ft_strlen(s2);
+	res = malloc(sizeof(char) * (sizetotal + 1));
+	if (!res || !s1 || !s2)
 		return (NULL);
-	fill_str(res, s1, s2);
+	while (s1[i] != 0)
+	{
+		res[i] = s1[i];
+		i++;
+	}
+	j = 0;
+	while (s2[j] != 0)
+	{
+		res[i] = s2[j];
+		i++;
+		j++;
+	}
+	res[sizetotal] = 0;
 	return (res);
 }
 
-void	fill_str(char *res, char *s1, char *s2)
+void	*ft_calloc(size_t element_count, size_t element_size)
 {
-	unsigned int	i;
-	unsigned int	j;
+	char	*res;
 
-	i = 0;
-	j = 0;
-	while (s1[j])
-		res[i++] = s1[j++];
-	j = 0;
-	while (s2[j])
-		res[i++] = s2[j++];
-	res[i] = '\0';
+	res = malloc(element_size * element_count);
+	if (!res)
+		return (NULL);
+	ft_bzero(res, element_size * element_count);
+	return (res);
 }

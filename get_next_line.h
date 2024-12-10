@@ -6,7 +6,7 @@
 /*   By: rojornod <rojornod@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/02 13:14:11 by rojornod          #+#    #+#             */
-/*   Updated: 2024/12/09 13:00:20 by rojornod         ###   ########.fr       */
+/*   Updated: 2024/12/10 12:10:27 by rojornod         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,11 +21,8 @@
 # include <stdio.h>
 
 char	*get_next_line(int fd);
-char	*read_file(int fd, char *line);
 char	*extract_line(char *buffer);
 size_t	ft_strlen(const char *s);
-char	*ft_next(char *buffer);
-char	*append_line(char *line, char *buffer);
 char	*ft_substr(char *s, unsigned int start, size_t len);
 char	*ft_strjoin(char const *s1, char const *s2);
 void	*ft_calloc(size_t element_count, size_t element_size);

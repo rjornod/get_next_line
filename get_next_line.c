@@ -6,7 +6,7 @@
 /*   By: rojornod <rojornod@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/02 13:14:08 by rojornod          #+#    #+#             */
-/*   Updated: 2024/12/09 16:39:09 by rojornod         ###   ########.fr       */
+/*   Updated: 2024/12/10 16:54:31 by rojornod         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,10 +18,12 @@ char	*get_next_line(int fd)
 	char		*line;
 
 	if (fd < 0 || BUFFER_SIZE <= 0 || read(fd, 0, 0) < 0)
+	{
 		return (NULL);
+	}
 	buffer = read_file(fd, buffer);
 	if (!buffer)
-		return (NULL);
+		return (free(buffer), NULL);
 	line = extract_line(buffer);
 	if (!line)
 		return (NULL);
@@ -35,8 +37,8 @@ char	*read_file(int fd, char *line)
 	char	*buffer;
 
 	if (!line)
-		line = ft_calloc(1, 1);//1b
-	buffer = ft_calloc(BUFFER_SIZE + 1, sizeof (char));//43b
+		line = ft_calloc(1, 1);
+	buffer = ft_calloc(BUFFER_SIZE + 1, sizeof (char));
 	bytes_read = 1;
 	while (bytes_read > 0)
 	{
@@ -51,10 +53,15 @@ char	*read_file(int fd, char *line)
 		if (ft_strchr(line, '\n'))
 			break ;
 	}
-	free(buffer);//free 43b
+	free(buffer);
 	return (line);
 }
 
+/****************************************************************************
+
+	Extracts a single line from the buffer, 
+	including the newline character if present.
+****************************************************************************/
 char	*extract_line(char *buffer)
 {
 	char	*line;
@@ -65,7 +72,7 @@ char	*extract_line(char *buffer)
 		return (NULL);
 	while (buffer[i] && buffer[i] != '\n')
 		i++;
-	line = ft_calloc(i + 2, sizeof(char));//8b
+	line = ft_calloc(i + 2, sizeof(char));
 	i = 0;
 	while (buffer[i] != '\n' && buffer[i])
 	{
@@ -77,6 +84,12 @@ char	*extract_line(char *buffer)
 	return (line);
 }
 
+/****************************************************************************
+	
+	Removes the first line from the buffer, allowing subsequent calls to 
+	get_next_line to process the next line in the file.
+	
+****************************************************************************/
 char	*trim_line(char *buffer)
 {
 	int		i;
@@ -91,21 +104,27 @@ char	*trim_line(char *buffer)
 		free(buffer);
 		return (NULL);
 	}
-	line = ft_calloc((ft_strlen(buffer) - i + 1), sizeof(char));//16b
+	line = ft_calloc((ft_strlen(buffer) - i + 1), sizeof(char));
 	i++;
 	j = 0;
 	while (buffer[i])
 		line[j++] = buffer[i++];
-	free(buffer);//free22b
+	free(buffer);
 	return (line);
 }
 
+/****************************************************************************
+	
+	Combines two strings and manage memory properly by freeing the 
+	original line after it has been joined with the buffer.
+	
+****************************************************************************/
 char	*join_lines(char *line, char *buffer)
 {
 	char	*temp;
 
-	temp = ft_strjoin(line, buffer);//22b
-	free(line);//free1b
+	temp = ft_strjoin(line, buffer);
+	free(line);
 	return (temp);
 }
 
@@ -118,32 +137,36 @@ int	main(void)
 	/**************************************/
 	/*             Long File              */
 	//fd = open("dracula.txt", O_RDONLY);
-
 	/**************************************/
 	/*             Long Line              */
 	// fd = open("longline.txt", O_RDONLY);
 	/**************************************/
-
 	/*           Normal File              */	
-	fd = open("smalltext.txt", O_RDONLY);
-	/**************************************/
-
+	//fd = open("smalltext.txt", O_RDONLY);
 	/**************************************/
 	/*            User input              */
 	//fd = 0;
 	/**************************************/
+	/*            Empty File              */	
+	fd = open("nullexample.txt", O_RDONLY);
+	/**************************************/
 	i = 1;
 
-	while ((line = get_next_line(fd)) != NULL)//1024b
+	if (get_next_line(fd) == NULL)
+	{
+		printf("Something went wrong\n");
+		return (-1);
+	}
+	while ((line = get_next_line(fd)) != NULL)
 	{
 		printf("[%d] %s", i, line);
-		free(line);//free8b
+		free(line);
 		i++;
 	}
 	//free(line);
 	close(fd);
 	return (0);
- }
+}
 
 char	*ft_strchr(char *s, int c)
 {

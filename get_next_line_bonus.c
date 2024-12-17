@@ -1,36 +1,41 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   get_next_line.c                                    :+:      :+:    :+:   */
+/*   get_next_line_bonus.c                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: rojornod <rojornod@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/11/26 11:44:16 by rojornod          #+#    #+#             */
-/*   Updated: 2024/12/16 11:29:26 by rojornod         ###   ########.fr       */
+/*   Created: 2024/12/12 14:03:19 by rojornod          #+#    #+#             */
+/*   Updated: 2024/12/17 13:27:58 by rojornod         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef BUFFER_SIZE
-# define BUFFER_SIZE 42
-#endif
-#include "get_next_line.h"
+#include "get_next_line_bonus.h"
 
 char	*get_next_line(int fd)
 {
-	static char	buffer[BUFFER_SIZE + 1];
+	static char	*buffer[FD_MAX] = {NULL};
 	char		*line;
 
-	if (fd < 0 || BUFFER_SIZE <= 0)
+	if (fd < 0 || BUFFER_SIZE <= 0 || fd > FD_MAX)
 		return (NULL);
-	line = extract_line(buffer);
-	if (!line)
+	if (!buffer[fd])
+	{
+		buffer[fd] = malloc(sizeof(char) * (BUFFER_SIZE + 1));
+		if (!buffer[fd])
+			return (NULL);
+		buffer[fd][0] = '\0';
+	}
+	line = extract_line(buffer[fd]);
+	line = read_and_join(fd, buffer[fd], line);
+	if (!line || line[0] == '\0')
+	{
+		free(line);
+		free(buffer[fd]);
+		buffer[fd] = NULL;
 		return (NULL);
-	line = read_and_join(fd, buffer, line);
-	if (!line)
-		return (NULL);
-	if (line[0] == '\0')
-		return (free(line), NULL);
-	manage_buffer(buffer);
+	}
+	manage_buffer(buffer[fd]);
 	return (line);
 }
 
@@ -59,19 +64,19 @@ char	*read_and_join(int fd, char *buffer, char *line)
 	int		bytes_read;
 	char	*prev_line;
 
-	bytes_read = 1;
 	prev_line = line;
-	if (!prev_line)
-		prev_line = ft_strdup("");
-	if (ft_strchr(line, '\n') != NULL)
-		return (line);
-	while (ft_strchr(buffer, '\n') == NULL && bytes_read != 0)
+	while (ft_strchr(line, '\n') == NULL)
 	{
 		bytes_read = read(fd, buffer, BUFFER_SIZE);
-		if (bytes_read == -1)
+		if (bytes_read <= 0)
 		{
 			buffer[0] = '\0';
-			return (free(prev_line), NULL);
+			if (bytes_read == -1)
+				free(prev_line);
+			if (bytes_read == -1)
+				return (NULL);
+			else
+				return (prev_line);
 		}
 		buffer[bytes_read] = '\0';
 		line = combine_strings(prev_line, buffer);
@@ -90,7 +95,7 @@ void	manage_buffer(char *buffer)
 
 	i = 0;
 	tmp = ft_strchr(buffer, '\n');
-	if (!tmp)
+	if (tmp == NULL)
 		return ;
 	tmp++;
 	while (tmp[i] != '\0')
